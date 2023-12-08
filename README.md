@@ -1,5 +1,7 @@
-# MTR-NTE
+# MTR-NTE - JSON
+A version of the NTE mod with the old JSON system for DRMs still working.
 
+-- Original README --
 
 ![Feature Grid Image](https://www.zbx1425.cn/nautilus/mtr-nte/img/featgrid.jpg)
 
