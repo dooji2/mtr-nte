@@ -1,5 +1,6 @@
 package cn.zbx1425.mtrsteamloco.render.scripting;
 
+import cn.zbx1425.mtrsteamloco.render.font.FontTextureCache;
 import cn.zbx1425.mtrsteamloco.BuildConfig;
 import cn.zbx1425.mtrsteamloco.Main;
 import cn.zbx1425.mtrsteamloco.mixin.ClientCacheAccessor;
@@ -35,6 +36,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.io.InputStream;
 import java.text.AttributedString;
 import java.util.*;
@@ -162,6 +164,7 @@ public class ScriptResourceUtil {
                 return new Font(fontName, Font.PLAIN, 1);
             }
         }
+        
     }
 
     private static final FontRenderContext FONT_CONTEXT = new FontRenderContext(new AffineTransform(), true, false);

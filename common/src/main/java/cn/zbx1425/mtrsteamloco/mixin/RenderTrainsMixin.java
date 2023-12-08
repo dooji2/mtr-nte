@@ -2,12 +2,15 @@ package cn.zbx1425.mtrsteamloco.mixin;
 
 import cn.zbx1425.mtrsteamloco.ClientConfig;
 import cn.zbx1425.mtrsteamloco.MainClient;
+import cn.zbx1425.mtrsteamloco.data.DisplayRegistry;
 import cn.zbx1425.mtrsteamloco.render.RailPicker;
 import cn.zbx1425.mtrsteamloco.render.RenderUtil;
 import cn.zbx1425.mtrsteamloco.render.rail.RailRenderDispatcher;
+import cn.zbx1425.sowcer.math.Vector3f;
 import cn.zbx1425.mtrsteamloco.render.scripting.ScriptContextManager;
 import cn.zbx1425.sowcer.util.GlStateTracker;
 import cn.zbx1425.sowcerext.model.integration.BufferSourceProxy;
+import mtr.Items;
 import com.mojang.blaze3d.vertex.PoseStack;
 import cn.zbx1425.sowcer.math.Matrix4f;
 import mtr.data.Rail;
@@ -47,6 +50,10 @@ public class RenderTrainsMixin {
             GlStateTracker.capture();
             MainClient.railRenderDispatcher.drawRails(Minecraft.getInstance().level, MainClient.drawScheduler.batchManager, viewMatrix);
             MainClient.drawScheduler.commitRaw(MainClient.profiler);
+
+            Vector3f upNormal = new Vector3f(0, 1, 0);
+            Vector3f transformedNormal = viewMatrix.transform3(upNormal);
+            DisplayRegistry.drawAllImmediate(transformedNormal);
 
             GlStateTracker.restore();
             if (Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes() && !Minecraft.getInstance().showOnlyReducedInfo()) {
