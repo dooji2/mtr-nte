@@ -2,6 +2,7 @@ package cn.zbx1425.mtrsteamloco;
 
 import cn.zbx1425.mtrsteamloco.data.ScriptedCustomTrains;
 import cn.zbx1425.mtrsteamloco.data.EyeCandyRegistry;
+import cn.zbx1425.mtrsteamloco.data.DisplayRegistry;
 import cn.zbx1425.mtrsteamloco.data.RailModelRegistry;
 import cn.zbx1425.mtrsteamloco.render.font.FontTextureCache;
 import cn.zbx1425.mtrsteamloco.mixin.TrainClientAccessor;
