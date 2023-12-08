@@ -45,6 +45,7 @@ public class CustomResources {
     public static void init(ResourceManager resourceManager) {
         Main.LOGGER.info("MTR-NTE has started loading custom resources.");
 
+        DisplayRegistry.reload(resourceManager);
         EyeCandyRegistry.reload(resourceManager);
         RailModelRegistry.reload(resourceManager);
         FontTextureCache.reloadFont(resourceManager);
