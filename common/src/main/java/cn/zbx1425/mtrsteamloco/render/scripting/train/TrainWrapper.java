@@ -2,11 +2,14 @@ package cn.zbx1425.mtrsteamloco.render.scripting.train;
 
 import cn.zbx1425.mtrsteamloco.mixin.TrainAccessor;
 import cn.zbx1425.sowcer.math.Matrix4f;
+import cn.zbx1425.sowcer.math.Vector3f;
 import mtr.MTRClient;
 import mtr.client.ClientData;
 import mtr.data.*;
 import mtr.path.PathData;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
 
@@ -14,7 +17,10 @@ public class TrainWrapper {
 
     public boolean[] doorLeftOpen;
     public boolean[] doorRightOpen;
+
     public Matrix4f[] lastWorldPose;
+    public Vector3f[] lastCarPosition;
+    public Vector3f[] lastCarRotation;
 
     public boolean shouldRender;
     public boolean isInDetailDistance;
@@ -27,7 +33,11 @@ public class TrainWrapper {
         doorLeftOpen = new boolean[train.trainCars];
         doorRightOpen = new boolean[train.trainCars];
         lastWorldPose = new Matrix4f[train.trainCars];
+        lastCarPosition = new Vector3f[train.trainCars];
+        lastCarRotation = new Vector3f[train.trainCars];
         Arrays.setAll(lastWorldPose, ignored -> Matrix4f.translation(0, -10000, 0));
+        Arrays.setAll(lastCarPosition, ignored -> new Vector3f(0, -10000, 0));
+        Arrays.setAll(lastCarRotation, ignored -> new Vector3f(0, 0, 0));
         this.train = train;
         this.reset();
     }
@@ -48,6 +58,7 @@ public class TrainWrapper {
         List<Long> routeIds = train.getRouteIds();
         DataCache dataCache = ClientData.DATA_CACHE;
         PlatformLookupMap result = new PlatformLookupMap();
+        result.siding = dataCache.sidingIdMap.get(train.sidingId);
         if (routeIds.isEmpty()) return result;
 
         int routeIndex = 0;
@@ -70,7 +81,8 @@ public class TrainWrapper {
             boolean reverseAtThisPlatform = (currentRoutePlatforms.size() + 1 >= thisRoute.platformIds.size() && reverseAtPlatform);
             Station lastStation = ClientData.DATA_CACHE.platformIdToStation.get(thisRoute.getLastPlatformId());
             PlatformInfo platformInfo = new PlatformInfo(thisRoute, thisStation, thisPlatform, lastStation,
-                    customDestination != null ? customDestination : lastStation.name, distance, reverseAtThisPlatform);
+                    customDestination != null ? customDestination : (lastStation != null ? lastStation.name : ""),
+                    distance, reverseAtThisPlatform);
 
             result.pathToPlatformIndex.put(pathIndex, result.platforms.size());
             result.platforms.add(platformInfo);
@@ -160,6 +172,7 @@ public class TrainWrapper {
     }
 
     private static class PlatformLookupMap {
+        public Siding siding;
         public final List<PlatformInfo> platforms = new ArrayList<>();
         public final TreeMap<Integer, Integer> pathToPlatformIndex = new TreeMap<>();
         public final TreeMap<Integer, List<PlatformInfo>> pathToRoutePlatforms = new TreeMap<>();
@@ -198,6 +211,15 @@ public class TrainWrapper {
         return shouldRender && (MTRClient.isReplayMod() || isInDetailDistance);
     }
 
+    @SuppressWarnings("unused")
+    public boolean isClientPlayerRiding() {
+        Player player = Minecraft.getInstance().player;
+        return player != null && train.isPlayerRiding(player);
+    }
+
+    @SuppressWarnings("unused") public Train mtrTrain() { return train; }
+    @SuppressWarnings("unused") public long id() { return train.id; }
+    @SuppressWarnings("unused") public Siding siding() { return trainPlatforms.siding; }
     @SuppressWarnings("unused") public String trainTypeId() { return train.trainId; }
     @SuppressWarnings("unused") public String baseTrainType() { return train.baseTrainType; }
     @SuppressWarnings("unused") public TransportMode transportMode() { return train.transportMode; }

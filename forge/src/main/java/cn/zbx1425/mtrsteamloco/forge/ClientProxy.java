@@ -1,5 +1,6 @@
 package cn.zbx1425.mtrsteamloco.forge;
 
+import cn.zbx1425.mtrsteamloco.ClientConfig;
 import cn.zbx1425.mtrsteamloco.Main;
 import cn.zbx1425.mtrsteamloco.MainClient;
 import cn.zbx1425.mtrsteamloco.gui.ConfigScreen;
@@ -56,9 +57,9 @@ public class ClientProxy {
 #endif
             if (Minecraft.getInstance().options.renderDebug) {
                 event.getLeft().add(
-                        "[NTE] Calls: " + MainClient.profiler.drawCallCount
-                                + ", Batches: " + MainClient.profiler.batchCount
-                                + ", Faces: " + (MainClient.profiler.singleFaceCount + MainClient.profiler.instancedFaceCount)
+                        "[NTE] Calls: " + MainClient.drawContext.drawCallCount
+                                + ", Batches: " + MainClient.drawContext.batchCount
+                                + ", Faces: " + (MainClient.drawContext.singleFaceCount + MainClient.drawContext.instancedFaceCount)
                 );
             }
         }
@@ -72,6 +73,11 @@ public class ClientProxy {
                                         Minecraft.getInstance().tell(() -> {
                                             Minecraft.getInstance().setScreen(ConfigScreen.createScreen(Minecraft.getInstance().screen));
                                         });
+                                        return 1;
+                                    }))
+                            .then(Commands.literal("hideriding")
+                                    .executes(context -> {
+                                        ClientConfig.hideRidingTrain = !ClientConfig.hideRidingTrain;
                                         return 1;
                                     }))
                             .then(Commands.literal("stat")

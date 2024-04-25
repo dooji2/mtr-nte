@@ -3,11 +3,12 @@ package cn.zbx1425.sowcerext.model;
 import cn.zbx1425.sowcer.batch.MaterialProp;
 import cn.zbx1425.sowcer.model.Model;
 import cn.zbx1425.sowcer.util.AttrUtil;
-import cn.zbx1425.sowcer.util.Profiler;
+import cn.zbx1425.sowcer.util.DrawContext;
 import cn.zbx1425.sowcer.vertex.VertAttrMapping;
 import cn.zbx1425.sowcer.math.Matrix4f;
 import cn.zbx1425.sowcer.math.Vector3f;
 import cn.zbx1425.sowcer.vertex.VertAttrState;
+import cn.zbx1425.sowcer.vertex.VertAttrType;
 import cn.zbx1425.sowcerext.model.integration.BufferSourceProxy;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -74,6 +75,14 @@ public class RawModel {
         int result = 0;
         for (RawMesh mesh : meshList.values()) {
             result += mesh.vertices.size();
+        }
+        return result;
+    }
+
+    public int getFaceCount() {
+        int result = 0;
+        for (RawMesh mesh : meshList.values()) {
+            result += mesh.faces.size();
         }
         return result;
     }
@@ -169,14 +178,13 @@ public class RawModel {
         }
     }
 
-    public void clearAttrStates() {
+    public void clearAttrState(VertAttrType attrType) {
         for (Map.Entry<MaterialProp, RawMesh> entry : meshList.entrySet()) {
-            entry.getKey().attrState = new VertAttrState();
-            entry.getValue().materialProp.attrState = entry.getKey().attrState;
+            entry.getKey().attrState.clearAttr(attrType);
         }
     }
 
-    public void writeBlazeBuffer(BufferSourceProxy vertexConsumers, Matrix4f matrix, int light, Profiler profiler) {
+    public void writeBlazeBuffer(BufferSourceProxy vertexConsumers, Matrix4f matrix, int light, DrawContext drawContext) {
         if (meshList.isEmpty()) return;
         for (Map.Entry<MaterialProp, RawMesh> entry : meshList.entrySet()) {
             RenderType renderType = entry.getKey().getBlazeRenderType();
@@ -198,7 +206,7 @@ public class RawModel {
             }
 
             entry.getValue().writeBlazeBuffer(vertexConsumers.getBuffer(renderType, entry.getKey().translucent),
-                    resultMatrix, resultColor, resultLight, profiler);
+                    resultMatrix, resultColor, resultLight, drawContext);
         }
     }
 
